@@ -1,1 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura AI - Smart Study Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <i class="fas fa-brain"></i>
+                <span>Aura AI</span>
+            </div>
+            <div class="loading-spinner"></div>
+            <p>Loading your smart study assistant...</p>
+        </div>
+    </div>
 
+    <!-- Toast Notifications -->
+    <div id="toastContainer"></div>
+
+    <!-- Main Container -->
+    <div class="container" id="mainContainer" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <h1>Aura AI</h1>
+                </div>
+                <div class="user-info" id="userInfo">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="username" id="username">Loading...</span>
+                        <span class="user-email" id="userEmail">...</span>
+                    </div>
+                    <button class="logout-btn" id="logoutBtn" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" data-section="chat">
+                    <i class="fas fa-comments"></i>
+                    <span>AI Chat</span>
+                </button>
+                <button class="nav-btn" data-section="pdf">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>PDF Study</span>
+                </button>
+                <button class="nav-btn" data-section="tools">
+                    <i class="fas fa-tools"></i>
+                    <span>Study Tools</span>
+                </button>
+                <button class="nav-btn" data-section="voice">
+                    <i class="fas fa-microphone"></i>
+                    <span>Voice Features</span>
+                </button>
+                <button class="nav-btn" data-section="question-paper">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Question Paper</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="new-chat-btn" id="newChatBtn">
+                    <i class="fas fa-plus"></i>
+                    <span>New Chat</span>
+                </button>
+                <div class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                    <label class="switch">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <i class="fas fa-sun"></i>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Chat Section -->
+            <section class="content-section active" id="chatSection">
+                <div class="chat-header">
+                    <h2><i class="fas fa-comments"></i> AI Study Assistant</h2>
+                    <div class="chat-controls">
+                        <button class="clear-chat-btn" id="clearChatBtn">
+                            <i class="fas fa-trash"></i> Clear Chat
+                        </button>
+                        <div class="mode-select">
+                            <select id="responseMode">
+                                <option value="detailed">Detailed Mode</option>
+                                <option value="short">Short Mode</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <!-- Messages will be added here -->
+                        <div class="welcome-message">
+                            <div class="ai-message">
+                                <div class="message-avatar">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="message-content">
+                                    <h3>👋 Hello! I'm Aura AI, your personal study assistant</h3>
+                                    <p>I can help you with:</p>
+                                    <ul>
+                                        <li>📚 Answering study questions</li>
+                                        <li>📄 Analyzing PDF documents</li>
+                                        <li>🎯 Generating study materials</li>
+                                        <li>🎤 Voice explanations</li>
+                                        <li>📝 Creating question papers</li>
+                                    </ul>
+                                    <p>Ask me anything or upload a PDF to get started!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-container">
+                        <div class="input-actions">
+                            <button class="voice-btn" id="voiceBtn" title="Voice Input">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                            <button class="upload-btn" id="uploadBtn" title="Upload PDF">
+                                <i class="fas fa-file-upload"></i>
+                            </button>
+                            <button class="tools-btn" id="toolsBtn" title="Quick Tools">
+                                <i class="fas fa-magic"></i>
+                            </button>
+                        </div>
+                        <div class="chat-input-wrapper">
+                            <textarea 
+                                id="messageInput" 
+                                placeholder="Ask your study question... (Press Enter to send, Shift+Enter for new line)"
+                                rows="1"
+                            ></textarea>
+                            <button class="send-btn" id="sendBtn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <div class="input-hints">
+                            <span>Try: "Explain quantum physics" or "Solve 2x + 5 = 15"</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PDF Section -->
+            <section class="content-section" id="pdfSection">
+                <div class="pdf-header">
+                    <h2><i class="fas fa-file-pdf"></i> PDF Study Mode</h2>
+                    <button class="upload-pdf-btn" id="uploadPdfBtn">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload PDF
+                    </button>
+                </div>
+
+                <div class="pdf-container">
+                    <div class="pdf-upload-area" id="pdfUploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h3>Upload Study Material</h3>
+                        <p>Drag & drop your PDF here or click to browse</p>
+                        <p class="upload-note">Max file size: 100MB</p>
+                        <input type="file" id="pdfFileInput" accept=".pdf" style="display: none;">
+                        <button class="browse-btn" id="browsePdfBtn">Browse Files</button>
+                    </div>
+
+                    <div class="pdf-list-container" id="pdfListContainer" style="display: none;">
+                        <div class="pdf-list-header">
+                            <h3>Your PDF Library</h3>
+                            <div class="pdf-actions">
+                                <button class="refresh-btn" id="refreshPdfsBtn">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="pdf-list" id="pdfList">
+                            <!-- PDF list will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="pdf-tools" id="pdfTools" style="display: none;">
+                        <h3>Generate from PDF</h3>
+                        <div class="tool-grid">
+                            <button class="tool-btn" data-type="notes">
+                                <i class="fas fa-sticky-note"></i>
+                                <span>Study Notes</span>
+                            </button>
+                            <button class="tool-btn" data-type="summary">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Summary</span>
+                            </button>
+                            <button class="tool-btn" data-type="questions">
+                                <i class="fas fa-question-circle"></i>
+                                <span>Questions</span>
+                            </button>
+                            <button class="tool-btn" data-type="mcq">
+                                <i class="fas fa-list-ol"></i>
+                                <span>MCQs</span>
+                            </button>
+                            <button class="tool-btn" data-type="long_answers">
+                                <i class="fas fa-file-signature"></i>
+                                <span>Long Answers</span>
+                            </button>
+                            <button class="tool-btn" data-type="important_questions">
+                                <i class="fas fa-star"></i>
+                                <span>Important Qs</span>
+                            </button>
+                        </div>
+                        <div class="selected-pdf" id="selectedPdfInfo">
+                            Selected: <span id="selectedPdfName">None</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tools Section -->
+            <section class="content-section" id="toolsSection">
+                <div class="tools-header">
+                    <h2><i class="fas fa-tools"></i> Smart Study Tools</h2>
+                    <p>Enhance your learning with these intelligent tools</p>
+                </div>
+
+                <div class="tools-grid">
+                    <div class="tool-card" id="questionGenerator">
+                        <div class="tool-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <h3>Question Generator</h3>
+                        <p>Generate practice questions on any topic</p>
+                        <button class="tool-action-btn">Use Tool</button>
+                    </div>
+
+                    <div class="tool-card" id="examRevision">
+                        <div class="tool-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <h3>Exam Revision</h3>
+                        <p>Create personalized revision plans</p>
+                        <button class="tool-action-btn">Start Revision</button>
+                    </div>
+
+                    <div class="tool-card" id="studyPlanner">
+                        <div class="tool-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3>Study Planner</h3>
+                        <p>Plan your study schedule</p>
+                        <button class="tool-action-btn">Create Plan</button>
+                    </div>
+
+                    <div class="tool-card" id="topicBreakdown">
+                        <div class="tool-icon">
+                            <i class="fas fa-sitemap"></i>
+                        </div>
+                        <h3>Topic Breakdown</h3>
+                        <p>Break complex topics into subtopics</p>
+                        <button class="tool-action-btn">Break Down</button>
+                    </div>
+
+                    <div class="tool-card" id="mathSolver">
+                        <div class="tool-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <h3>Math Solver</h3>
+                        <p>Solve equations step-by-step</p>
+                        <button class="tool-action-btn">Solve Math</button>
+                    </div>
+
+                    <div class="tool-card" id="scienceExplainer">
+                        <div class="tool-icon">
+                            <i class="fas fa-atom"></i>
+                        </div>
+                        <h3>Science Explainer</h3>
+                        <p>Understand scientific concepts</p>
+                        <button class="tool-action-btn">Explain Science</button>
+                    </div>
+                </div>
+
+                <!-- Tool Modals -->
+                <div class="tool-modal" id="questionGeneratorModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3><i class="fas fa-question-circle"></i> Question Generator</h3>
+                            <button class="close-modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Topics:</label>
+                                <textarea id="questionTopics" placeholder="Enter topics (e.g., Physics, Calculus, Biology)"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Question Type:</label>
+                                <select id="questionType">
+                                    <option value="mixed">Mixed</option>
+                                    <option value="mcq">Multiple Choice</option>
+                                    <option value="short">Short Answer</option>
+                                    <option value="long">Long Answer</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Number of Questions:</label>
+                                <input type="number" id="questionCount" min="1" max="50" value="10">
+                            </div>
+                            <button class="generate-btn" id="generateQuestionsBtn">Generate Questions</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- More modals would be added similarly -->
+            </section>
+
+            <!-- Voice Section -->
+            <section class="content-section" id="voiceSection">
+                <div class="voice-header">
+                    <h2><i class="fas fa-microphone"></i> Voice Features</h2>
+                    <p>Use voice to interact with Aura AI</p>
+                </div>
+
+                <div class="voice-container">
+                    <div class="voice-controls">
+                        <div class="voice-input-section">
+                            <h3><i class="fas fa-microphone-alt"></i> Voice Input</h3>
+                            <button class="voice-record-btn" id="voiceRecordBtn">
+                                <i class="fas fa-microphone"></i>
+                                <span>Start Speaking</span>
+                            </button>
+                            <div class="voice-status" id="voiceStatus">
+                                <i class="fas fa-circle"></i>
+                                <span>Ready to listen</span>
+                            </div>
+                            <div class="voice-transcript" id="voiceTranscript">
+                                <!-- Transcript will appear here -->
+                            </div>
+                        </div>
+
+                        <div class="voice-output-section">
+                            <h3><i class="fas fa-volume-up"></i> Voice Output</h3>
+                            <div class="voice-output-controls">
+                                <button class="voice-read-btn" id="voiceReadBtn">
+                                    <i class="fas fa-play"></i>
+                                    <span>Read Last Response</span>
+                                </button>
+                                <button class="voice-pause-btn" id="voicePauseBtn" disabled>
+                                    <i class="fas fa-pause"></i>
+                                    <span>Pause</span>
+                                </button>
+                                <button class="voice-stop-btn" id="voiceStopBtn" disabled>
+                                    <i class="fas fa-stop"></i>
+                                    <span>Stop</span>
+                                </button>
+                            </div>
+                            <div class="voice-settings">
+                                <label>
+                                    <input type="checkbox" id="autoReadToggle">
+                                    <span>Auto-read AI responses</span>
+                                </label>
+                                <div class="voice-speed">
+                                    <label>Speed:</label>
+                                    <input type="range" id="voiceSpeed" min="0.5" max="2" step="0.1" value="1">
+                                    <span id="speedValue">1.0x</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="voice-history">
+                        <h3><i class="fas fa-history"></i> Voice History</h3>
+                        <div class="history-list" id="voiceHistory">
+                            <!-- Voice history will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Question Paper Section -->
+            <section class="content-section" id="questionPaperSection">
+                <div class="question-header">
+                    <h2><i class="fas fa-file-alt"></i> Custom Question Paper Generator</h2>
+                    <p>Create exam-style question papers tailored to your needs</p>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-book"></i> Topics/Subject</label>
+                                <textarea 
+                                    id="paperTopics" 
+                                    placeholder="Enter topics or subject (e.g., Physics: Mechanics, Thermodynamics; Chemistry: Organic, Inorganic)"
+                                    rows="3"
+                                ></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-chart-line"></i> Difficulty Level</label>
+                                <select id="paperDifficulty">
+                                    <option value="easy">Easy</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="hard">Hard</option>
+                                    <option value="mixed">Mixed</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label><i class="fas fa-star"></i> Total Marks</label>
+                                <input type="number" id="paperMarks" min="10" max="200" value="100">
+                            </div>
+
+                            <div class="form-group">
+                                <label><i class="fas fa-clock"></i> Duration (minutes)</label>
+                                <input type="number" id="paperDuration" min="30" max="180" value="180">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-list"></i> Paper Structure</label>
+                                <div class="structure-options">
+                                    <label>
+                                        <input type="checkbox" name="sections" value="mcq" checked>
+                                        <span>MCQs</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" name="sections" value="short" checked>
+                                        <span>Short Answer</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" name="sections" value="long" checked>
+                                        <span>Long Answer</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" name="sections" value="problems">
+                                        <span>Problems</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label><i class="fas fa-sticky-note"></i> Additional Instructions</label>
+                                <textarea 
+                                    id="paperInstructions" 
+                                    placeholder="Any specific requirements? (e.g., Include diagrams, Focus on applications, etc.)"
+                                    rows="2"
+                                ></textarea>
+                            </div>
+                        </div>
+
+                        <button class="generate-paper-btn" id="generatePaperBtn">
+                            <i class="fas fa-magic"></i>
+                            Generate Question Paper
+                        </button>
+                    </div>
+
+                    <div class="paper-preview" id="paperPreview">
+                        <div class="preview-header">
+                            <h3><i class="fas fa-eye"></i> Preview</h3>
+                            <div class="preview-actions">
+                                <button class="copy-btn" id="copyPaperBtn">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="download-btn" id="downloadPaperBtn">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                            </div>
+                        </div>
+                        <div class="preview-content" id="previewContent">
+                            <p class="preview-placeholder">
+                                Your generated question paper will appear here.
+                                Fill in the form and click "Generate Question Paper".
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- PDF Upload Modal -->
+    <div class="modal" id="pdfUploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-upload"></i> Upload PDF</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-dropzone" id="uploadDropzone">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Drag & drop your PDF here</p>
+                    <p class="dropzone-note">or</p>
+                    <button class="browse-modal-btn" id="browseModalBtn">Browse Files</button>
+                    <input type="file" id="modalPdfInput" accept=".pdf" style="display: none;">
+                </div>
+                <div class="upload-progress" id="uploadProgress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p class="progress-text" id="progressText">Uploading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="voice.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
